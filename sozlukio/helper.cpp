@@ -96,12 +96,12 @@ void HlpSendLogString(LPCSTR format, ...)
     len = vsnprintf(buffer, sizeof(buffer), format, va);
 
     va_end(va);
-    
+
 #if 1
     OutputDebugStringA(buffer);
 #endif
 
-    sendto(HlppLogsock, buffer, len, 0, (struct sockaddr *)&HlppEndpointAddr, sizeof(HlppEndpointAddr));
+    sendto(HlppLogsock, buffer, len, 0, (struct sockaddr*)&HlppEndpointAddr, sizeof(HlppEndpointAddr));
 }
 
 ULONG HlpRemoveString(PCHAR str, ULONG length, PCHAR findStr)
@@ -173,7 +173,7 @@ PCHAR HlpTokenize(PCHAR str, PCHAR delim, ULONG flag, PTOKENIZE_CONTEXT tokCtx)
     {
         //end of string
         tokCtx->flag |= TOKF_DONE;
-        
+
         if (!(tokCtx->flag & TOKF_SKIP_EMPTY))
             return tok;
 
@@ -203,7 +203,7 @@ PCHAR HlpTokenize(PCHAR str, PCHAR delim, ULONG flag, PTOKENIZE_CONTEXT tokCtx)
 }
 
 //Dynamic array support routines
-BOOL HlpInitDynamicArray(PBYTE *container,ULONG sizeOfType, ULONG initialSize, PDYNAMIC_ARRAY_OF_TYPE arrPtr)
+BOOL HlpInitDynamicArray(PBYTE* container, ULONG sizeOfType, ULONG initialSize, PDYNAMIC_ARRAY_OF_TYPE arrPtr)
 {
     arrPtr->data = (PBYTE)HlpAlloc(initialSize * sizeOfType);
 
@@ -373,8 +373,8 @@ BOOL HlpInsertIntoAutoBuffer(PAUTO_BUFFER pBuffer, ULONG index, PVOID data, ULON
     }
 
     memmove(
-        pBuffer->buffer + index + size - overwriteSize, 
-        pBuffer->buffer + index + overwriteSize, 
+        pBuffer->buffer + index + size - overwriteSize,
+        pBuffer->buffer + index + overwriteSize,
         pBuffer->pos - index - overwriteSize
     );
 
@@ -394,8 +394,8 @@ sub-delims  = "!" / "$" / "&" / "'" / "(" / ")"
                   / "*" / "+" / "," / ";" / "="
 */
 
-const char *ENC_RESERVED = ":/?#[]@!$&'()*+,;=";
-const char *ENC_UNRESERVED = "-._~";
+const char* ENC_RESERVED = ":/?#[]@!$&'()*+,;=";
+const char* ENC_UNRESERVED = "-._~";
 
 //ISO_8859_9 encoded TR character table
 //following Turkish characters are compatible with 
@@ -408,12 +408,12 @@ struct ISO_8859_9_TR_CHARS
         CHAR cval;
         UCHAR ucval;
     }encChar;
-    
+
     USHORT uniChar;
-}TR_CHARS[12] = 
+}TR_CHARS[12] =
 {
     {'C', 0xC7, 0x00C7},
-    {'G', 0xD0, 0x011E}, 
+    {'G', 0xD0, 0x011E},
     {'O', 0xD6, 0x00D6},
     {'U', 0xDC, 0x00DC},
     {'I', 0xDD, 0x0130},
@@ -429,7 +429,7 @@ struct ISO_8859_9_TR_CHARS
 #define EncIsAllowed(chr) (isdigit(chr) || isalnum(chr) || strchr(ENC_UNRESERVED,chr) != NULL)
 #define EncIsReserved(chr) (strchr(ENC_RESERVED,chr) != NULL)
 
-typedef struct ISO_8859_9_TR_CHARS *PISO_8859_9_TR_CHARS;
+typedef struct ISO_8859_9_TR_CHARS* PISO_8859_9_TR_CHARS;
 
 PISO_8859_9_TR_CHARS HlppMapByUnichr(WCHAR chr)
 {
@@ -503,7 +503,7 @@ DWORD HlpInsertString(PCHAR s, ULONG slen, ULONG index, PCHAR insertStr)
     return slen;
 }
 
-DWORD HlpReplaceString(PCHAR *ps, ULONG *pSizeOfString, PCHAR find, PCHAR repl)
+DWORD HlpReplaceString(PCHAR* ps, ULONG* pSizeOfString, PCHAR find, PCHAR repl)
 {
     ULONG flen, rlen;
     ULONG sizeOfString, newLength;
@@ -547,19 +547,19 @@ DWORD HlpReplaceString(PCHAR *ps, ULONG *pSizeOfString, PCHAR find, PCHAR repl)
 }
 
 
-DWORD HlpUrlEncodeAscii(PCHAR value, ULONG length, PCHAR *encodedValue, BOOL includeReserved)
+DWORD HlpUrlEncodeAscii(PCHAR value, ULONG length, PCHAR* encodedValue, BOOL includeReserved)
 {
     PISO_8859_9_TR_CHARS encTable;
 
     DWORD encLen = 0;
     PCHAR pEnc;
     ULONG pEncSize = ((length + 5) * 3) + 1;
-    
+
     pEnc = (PCHAR)HlpAlloc(pEncSize);
 
     if (!pEnc)
         return 0;
-    
+
     for (INT i = 0; i < length; i++)
     {
         //Workarounds to escape sozluk-cgi's incorrect querystring parsing routines
@@ -595,7 +595,7 @@ DWORD HlpUrlEncodeAscii(PCHAR value, ULONG length, PCHAR *encodedValue, BOOL inc
             continue;
         }
 
-        
+
         if (!isascii(value[i]))
         {
             encTable = HlppMapByEncodedChr(value[i]);
@@ -605,7 +605,7 @@ DWORD HlpUrlEncodeAscii(PCHAR value, ULONG length, PCHAR *encodedValue, BOOL inc
                 *(pEnc + encLen) = encTable->ansiChar;
                 encLen++;
             }
-            
+
             continue;
         }
 
@@ -632,7 +632,7 @@ DWORD HlpUrlDecodeAsAscii(PCHAR value, ULONG length)
     PISO_8859_9_TR_CHARS encTable;
 
     CHAR buf[16] = { 0 };
-    PWCHAR valueW,pw;
+    PWCHAR valueW, pw;
     PCHAR p, pbuf;
     INT radix = 10;
     LONG entValue;
@@ -647,7 +647,7 @@ DWORD HlpUrlDecodeAsAscii(PCHAR value, ULONG length)
             value[i] = ' ';
 
     }
-    
+
     //the most junk api ever in the Windows API set. piece of crap
     //But that saved my time a bit to quick unescape encoded value
     UrlUnescapeA(value, NULL, &tmp, URL_UNESCAPE_INPLACE);
@@ -667,12 +667,12 @@ DWORD HlpUrlDecodeAsAscii(PCHAR value, ULONG length)
     {
         //Some browsers can translate non-ascii chars as html entity
         //before the percentage encoding.
-        if (!strncmp(p, "&#",2))
+        if (!strncmp(p, "&#", 2))
         {
             p += 2;
 
             radix = *p == 'x' ? 16 : 10;
-            
+
             pbuf = strstr(p, ";");
 
             if (pbuf == NULL)
@@ -684,7 +684,7 @@ DWORD HlpUrlDecodeAsAscii(PCHAR value, ULONG length)
 
             if (pbuf - p >= sizeof(buf))
             {
-                *pw++ =  L'&';
+                *pw++ = L'&';
                 p -= 2;
                 continue;
             }
@@ -693,7 +693,7 @@ DWORD HlpUrlDecodeAsAscii(PCHAR value, ULONG length)
                 p++;
 
             strncpy(buf, p, pbuf - p);
-            
+
             entValue = strtoul(buf, NULL, radix);
 
             memset(buf, 0, sizeof(buf));
@@ -712,7 +712,7 @@ DWORD HlpUrlDecodeAsAscii(PCHAR value, ULONG length)
 
                 if (encTable)
                 {
-                    *((USHORT *)pw) = encTable->uniChar;
+                    *((USHORT*)pw) = encTable->uniChar;
                     pw++;
                 }
 
@@ -720,7 +720,7 @@ DWORD HlpUrlDecodeAsAscii(PCHAR value, ULONG length)
             else
             {
                 *pw = *p;
-                *((USHORT *)pw) &= 0x00FF;
+                *((USHORT*)pw) &= 0x00FF;
                 pw++;
             }
         }
@@ -731,16 +731,15 @@ DWORD HlpUrlDecodeAsAscii(PCHAR value, ULONG length)
     WC_COMPOSITECHECK depends on the system locale setting.
     So If the system's default locale is set to Turkish by default
     composition does not occur for accented letters as expected. Because turkish
-    accented letters are valid in the locale and these are not need to be translated. 
+    accented letters are valid in the locale and these are not need to be translated.
 
     You have two choice to handle this.
-    1) change your system locate. 
+    1) change your system locate.
 
     2) use the PISO_8859_9_TR_CHARS table that I defined above in this file.
     map encoded value using HlppMapByEncodedChr for example.
     and put its ascii equivalent from the returned map struct. but remember
     it works for Turkish letters only.!
-
     */
     tmp = WideCharToMultiByte(CP_ACP, WC_COMPOSITECHECK, valueW, -1, value, length + 1, NULL, NULL);
 
@@ -752,7 +751,7 @@ DWORD HlpUrlDecodeAsAscii(PCHAR value, ULONG length)
     return tmp - 1; //dont count null term 
 }
 
-DWORD HlpReEncodeAsAscii(PCHAR value, ULONG length, PCHAR *encodedValue, KEYVALUE_REENCODE_CALLBACK cb)
+DWORD HlpReEncodeAsAscii(PCHAR value, ULONG length, PCHAR* encodedValue, KEYVALUE_REENCODE_CALLBACK cb)
 {
     PREQUEST_KEYVALUE pKv;
     SOZLUK_REQUEST req;
@@ -773,14 +772,14 @@ DWORD HlpReEncodeAsAscii(PCHAR value, ULONG length, PCHAR *encodedValue, KEYVALU
             cb(pKv, RL_INITIAL);
 
         HlpWriteIntoAutoBuffer(buf, pKv->key, strlen(pKv->key));
-        HlpWriteIntoAutoBuffer(buf, "=", 1);
+        HlpWriteIntoAutoBuffer(buf, (PVOID)"=", 1);
 
         dlen = HlpUrlDecodeAsAscii(pKv->value, pKv->valueLength);
 
         if (cb)
             cb(pKv, RL_AFTER_DECODE);
 
-        dlen = HlpUrlEncodeAscii(pKv->value, dlen, &tmp,TRUE);
+        dlen = HlpUrlEncodeAscii(pKv->value, dlen, &tmp, TRUE);
 
 
         pKv->valueLength = dlen;
@@ -795,12 +794,12 @@ DWORD HlpReEncodeAsAscii(PCHAR value, ULONG length, PCHAR *encodedValue, KEYVALU
             cb(pKv, RL_AFTER_ENCODE);
 
         VERBOSE("%s re-encoded as %s", pKv->key, pKv->value);
-        
+
         HlpWriteIntoAutoBuffer(buf, pKv->value, pKv->valueLength);
 
 
         if (i != req.KvCount - 1)
-            HlpWriteIntoAutoBuffer(buf, "&", 1);
+            HlpWriteIntoAutoBuffer(buf, (PVOID)"&", 1);
     }
 
     RciDestroyRequestObject(&req);
@@ -892,10 +891,10 @@ BOOL HlpGetExecutableName(PCHAR exeNameBuf, ULONG bufSize)
     return HlpGetFileNameFromPath(exeNameBuf, NULL, bufSize);
 }
 
-void HlpGetCurrentDateString(CHAR *buffer, ULONG bufSize)
+void HlpGetCurrentDateString(CHAR* buffer, ULONG bufSize)
 {
     time_t t;
-    struct tm *ptm;
+    struct tm* ptm;
 
     t = time(NULL);
 
@@ -923,7 +922,7 @@ BOOL HlpBuildEntryContextFromWriteData(PAUTO_BUFFER dataBuffer, PSOZLUK_ENTRY_CO
 
     psz++;
 
-    token = HlpTokenize(psz, "\r\n", 0, &tokCtx);
+    token = HlpTokenize(psz, (PCHAR)"\r\n", 0, &tokCtx);
 
     descBuf = HlpCreateAutoBuffer(256);
 
@@ -946,10 +945,10 @@ BOOL HlpBuildEntryContextFromWriteData(PAUTO_BUFFER dataBuffer, PSOZLUK_ENTRY_CO
         default:
         {
             HlpWriteIntoAutoBuffer(descBuf, token, strlen(token));
-            HlpWriteIntoAutoBuffer(descBuf, "\r\n", 2);
+            HlpWriteIntoAutoBuffer(descBuf, (PVOID)"\r\n", 2);
             break;
         }
-            
+
         }
         token = HlpTokenize(NULL, NULL, 0, &tokCtx);
 
@@ -958,13 +957,13 @@ BOOL HlpBuildEntryContextFromWriteData(PAUTO_BUFFER dataBuffer, PSOZLUK_ENTRY_CO
 
     sec->DescLength = descBuf->pos;
     sec->Desc = (PCHAR)HlpTakeBufferOwnershipAndDestroyBufferObject(descBuf);
-    
+
     return TRUE;
 }
 
 BOOL HlppDontHang = FALSE;
 
-BOOL HlpxHangUntilDebuggerAttach(LPCSTR func,LPCSTR hint)
+BOOL HlpxHangUntilDebuggerAttach(LPCSTR func, LPCSTR hint)
 {
     LONG remainder = 0;
     INT qsel;
@@ -979,7 +978,7 @@ BOOL HlpxHangUntilDebuggerAttach(LPCSTR func,LPCSTR hint)
         sprintf(msgBuf, "want to hang till debugger attached for \r\n"
             "\"%s\" (%s)?\r\n"
             "yes: waits debugger\r\nno: dont wait for this time\r\ncancel: dont wait all the time",
-            func,hint != NULL ? hint : "");
+            func, hint != NULL ? hint : "");
 
         qsel = MessageBoxA(NULL, msgBuf,
             "sozlukio", MB_ICONQUESTION | MB_YESNOCANCEL);
