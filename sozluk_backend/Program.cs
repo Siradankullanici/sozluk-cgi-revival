@@ -124,7 +124,7 @@ namespace sozluk_backend
             Log.EnableLogType(LogType.Error);
             Log.EnableLogType(LogType.Warning);
 
-            if (!Config.Get().IsOK)
+            if (!(Config.Get()?.IsOK ?? false))
             {
                 Log.Critical("Some of required config settings missing.");
                 return;
